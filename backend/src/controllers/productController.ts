@@ -1,5 +1,6 @@
 import Product, { IProduct } from '../models/productModel';
 import { Request, Response } from 'express';
+
 import asyncHandler from 'express-async-handler';
 
 //@desc Fetch all products
@@ -114,7 +115,7 @@ const createProductReview = asyncHandler(
   async (req: Request, res: Response) => {
     const { rating, comment } = req.body;
 
-    (await Product.findById(req.params.id)) as IProduct;
+    const product = (await Product.findById(req.params.id)) as IProduct;
 
     if (product) {
       const alreadyReviewed = product.reviews.find(
