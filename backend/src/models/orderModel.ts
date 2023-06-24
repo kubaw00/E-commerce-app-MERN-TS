@@ -1,6 +1,6 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema, Document } from 'mongoose';
 
-const orderSchema = mongoose.Schema(
+const orderSchema: Schema = new Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
@@ -78,6 +78,20 @@ const orderSchema = mongoose.Schema(
   }
 );
 
-const Order = mongoose.model('Order', orderSchema);
+export interface IOrder extends Document {
+  totalPrice: number;
+  isPaid: boolean;
+  paidAt: string | number;
+  isDelivered: boolean;
+  deliveredAt: string | number;
+  paymentResult: {
+    id: string;
+    state: string;
+    update_time: string;
+    email_address: string;
+  };
+}
+
+const Order = mongoose.model<IOrder>('Order', orderSchema);
 
 export default Order;

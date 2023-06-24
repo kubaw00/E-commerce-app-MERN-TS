@@ -1,11 +1,12 @@
-import Product from '../models/productModel.js';
+import Product, { IProduct } from '../models/productModel';
+import { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 
 //@desc Fetch all products
 //@route GET /api/products
 //@access Public
 
-const getProducts = asyncHandler(async (req, res) => {
+const getProducts = asyncHandler(async (req: Request, res: Response) => {
   const pageSize = 10;
 
   const page = Number(req.query.pageNumber) || 1;
@@ -30,7 +31,7 @@ const getProducts = asyncHandler(async (req, res) => {
 //@route GET /api/products/:id
 //@access Public
 
-const getProductById = asyncHandler(async (req, res) => {
+const getProductById = asyncHandler(async (req: Request, res: Response) => {
   const product = await Product.findById(req.params.id);
 
   if (product) {
@@ -45,7 +46,7 @@ const getProductById = asyncHandler(async (req, res) => {
 //@route DELETE /api/products/:id
 //@access Private/Admin
 
-const deleteProduct = asyncHandler(async (req, res) => {
+const deleteProduct = asyncHandler(async (req: Request, res: Response) => {
   const product = await Product.findById(req.params.id);
 
   if (product) {
@@ -61,7 +62,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
 //@route POST /api/products
 //@access Private/Admin
 
-const createProduct = asyncHandler(async (req, res) => {
+const createProduct = asyncHandler(async (req: Request, res: Response) => {
   const product = new Product({
     name: 'Sample name',
     price: 0,
@@ -82,7 +83,7 @@ const createProduct = asyncHandler(async (req, res) => {
 //@route PUT /api/products/:id
 //@access Private/Admin
 
-const updateProduct = asyncHandler(async (req, res) => {
+const updateProduct = asyncHandler(async (req: Request, res: Response) => {
   const { name, price, description, image, brand, category, countInStock } =
     req.body;
 
@@ -109,48 +110,50 @@ const updateProduct = asyncHandler(async (req, res) => {
 //@route POST /api/products/:id/reviews
 //@access Private
 
-const createProductReview = asyncHandler(async (req, res) => {
-  const { rating, comment } = req.body;
+const createProductReview = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { rating, comment } = req.body;
 
-  const product = await Product.findById(req.params.id);
+    (await Product.findById(req.params.id)) as IProduct;
 
-  if (product) {
-    const alreadyReviewed = product.reviews.find(
-      (r) => r.user.toString() === req.user._id.toString()
-    );
+    if (product) {
+      const alreadyReviewed = product.reviews.find(
+        (r) => r.user.toString() === req.user._id.toString()
+      );
 
-    if (alreadyReviewed) {
-      res.status(400);
-      throw new Error('Raview already exist');
+      if (alreadyReviewed) {
+        res.status(400);
+        throw new Error('Raview already exist');
+      }
+
+      const review = {
+        name: req.user.name,
+        rating: Number(rating),
+        comment,
+        user: req.user._id,
+      };
+
+      product.reviews.push(review);
+      product.numReviews = product.reviews.length;
+      product.rating =
+        product.reviews.reduce((acc, item) => item.rating + acc, 0) /
+        product.reviews.length;
+
+      await product.save();
+
+      res.status(201).json({ message: 'Review added' });
+    } else {
+      res.status(404);
+      throw new Error('Product not found');
     }
-
-    const review = {
-      name: req.user.name,
-      rating: Number(rating),
-      comment,
-      user: req.user._id,
-    };
-
-    product.reviews.push(review);
-    product.numReviews = product.reviews.length;
-    product.rating =
-      product.reviews.reduce((acc, item) => item.rating + acc, 0) /
-      product.reviews.length;
-
-    await product.save();
-
-    res.status(201).json({ message: 'Review added' });
-  } else {
-    res.status(404);
-    throw new Error('Product not found');
   }
-});
+);
 
 //@desc Get top rated procucts
 //@route POST /api/products/top
 //@access Public
 
-const getTopProducts = asyncHandler(async (req, res) => {
+const getTopProducts = asyncHandler(async (req: Request, res: Response) => {
   const products = await Product.find({}).sort({ rating: -1 }).limit(3);
 
   res.json(products);
