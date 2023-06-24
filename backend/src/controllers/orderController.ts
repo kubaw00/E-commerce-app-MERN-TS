@@ -1,11 +1,12 @@
-import Order from '../models/orderModel.js';
+import { Request, Response } from 'express';
+import Order from '../models/orderModel';
 import asyncHandler from 'express-async-handler';
 
 //@desc Create new order
 //@route POST /api/orders
 //@access Private
 
-const getOrderItems = asyncHandler(async (req, res) => {
+const getOrderItems = asyncHandler(async (req: Request, res: Response) => {
   const {
     orderItems,
     shippingAddress,
@@ -42,7 +43,7 @@ const getOrderItems = asyncHandler(async (req, res) => {
 //@route GET /api/orders/:id
 //@access Private
 
-const getOrderById = asyncHandler(async (req, res) => {
+const getOrderById = asyncHandler(async (req: Request, res: Response) => {
   const order = await Order.findById(req.params.id).populate(
     'user',
     'name email'
@@ -60,7 +61,7 @@ const getOrderById = asyncHandler(async (req, res) => {
 //@route GET /api/orders/:id/pay
 //@access Private
 
-const updateOrderToPaid = asyncHandler(async (req, res) => {
+const updateOrderToPaid = asyncHandler(async (req: Request, res: Response) => {
   const order = await Order.findById(req.params.id);
 
   if (order) {
@@ -85,7 +86,7 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
 //@route GET /api/orders/myorders
 //@access Private
 
-const getMyOrders = asyncHandler(async (req, res) => {
+const getMyOrders = asyncHandler(async (req: Request, res: Response) => {
   const orders = await Order.find({ user: req.user._id });
   res.json(orders);
 });
@@ -94,7 +95,7 @@ const getMyOrders = asyncHandler(async (req, res) => {
 //@route GET /api/orders
 //@access Private/Admin
 
-const getOrders = asyncHandler(async (req, res) => {
+const getOrders = asyncHandler(async (req: Request, res: Response) => {
   const orders = await Order.find({}).populate('user', 'id name');
   res.json(orders);
 });
@@ -103,20 +104,22 @@ const getOrders = asyncHandler(async (req, res) => {
 //@route GET /api/orders/:id/deliver
 //@access Private/Admin
 
-const updateOrderToDelivered = asyncHandler(async (req, res) => {
-  const order = await Order.findById(req.params.id);
+const updateOrderToDelivered = asyncHandler(
+  async (req: Request, res: Response) => {
+    const order = await Order.findById(req.params.id);
 
-  if (order) {
-    order.isDelivered = true;
-    order.deliveredAt = Date.now();
+    if (order) {
+      order.isDelivered = true;
+      order.deliveredAt = Date.now();
 
-    const upadatedOrder = await order.save();
-    res.json(upadatedOrder);
-  } else {
-    res.status(404);
-    throw new Error('Order not found');
+      const upadatedOrder = await order.save();
+      res.json(upadatedOrder);
+    } else {
+      res.status(404);
+      throw new Error('Order not found');
+    }
   }
-});
+);
 
 export {
   getOrderItems,
