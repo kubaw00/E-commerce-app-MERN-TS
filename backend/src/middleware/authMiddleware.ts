@@ -33,6 +33,7 @@ const protect = asyncHandler(
 );
 
 const admin = (req: Request, res: Response, next: NextFunction) => {
+  // @ts-expect-error
   if (req.user && req.user.isAdmin) {
     next();
   } else {
