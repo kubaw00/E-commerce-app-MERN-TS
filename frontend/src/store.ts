@@ -8,71 +8,74 @@ import {
   productCreateReducer,
   productUpdateReducer,
   productReviewCreateReducer,
-  productTopRatedReducer,
+  productTopReducer,
 } from './reducers/productReducers';
-import { cartReducer } from './reducers/cartReducers';
+import { cartReducer, shippingInitialState } from './reducers/cartReducers';
 import {
+  userDeleteReducer,
+  userDetailsReducer,
+  userListReducer,
   userLoginReducer,
   userRegisterReducer,
-  userDetailsReducer,
   userUpdateProfileReducer,
-  userListReducer,
-  userDeleteReducer,
   userUpdateReducer,
 } from './reducers/userReducers';
 import {
   orderCreateReducer,
-  orderDetailsReducer,
-  orderPayReducer,
-  orderListMyReducer,
-  orderListAdminReducer,
   orderDeliverReducer,
+  orderDetailReducer,
+  orderListMyReducer,
+  orderListReducer,
+  orderPayReducer,
 } from './reducers/orderReducers';
 
 const reducer = combineReducers({
+  cart: cartReducer,
+  productTop: productTopReducer,
   productList: productListReducer,
   productDetails: productDetailsReducer,
   productDelete: productDeleteReducer,
   productCreate: productCreateReducer,
   productUpdate: productUpdateReducer,
   productReviewCreate: productReviewCreateReducer,
-  productTopRated: productTopRatedReducer,
-  cart: cartReducer,
   userLogin: userLoginReducer,
   userRegister: userRegisterReducer,
   userDetails: userDetailsReducer,
   userUpdateProfile: userUpdateProfileReducer,
+  orderCreate: orderCreateReducer,
+  orderDetail: orderDetailReducer,
+  orderList: orderListReducer,
+  orderPay: orderPayReducer,
+  orderListMy: orderListMyReducer,
+  orderDeliver: orderDeliverReducer,
   userList: userListReducer,
   userDelete: userDeleteReducer,
   userUpdate: userUpdateReducer,
-  orderCreate: orderCreateReducer,
-  orderDetails: orderDetailsReducer,
-  orderPay: orderPayReducer,
-  orderMyList: orderListMyReducer,
-  orderListAdmin: orderListAdminReducer,
-  orderDeliver: orderDeliverReducer,
 });
 
 const cartItemsFromStorage = localStorage.getItem('cartItems')
-  ? JSON.parse(localStorage.getItem('cartItems'))
+  ? JSON.parse(localStorage.getItem('cartItems') as string)
   : [];
 
 const userInfoFromStorage = localStorage.getItem('userInfo')
-  ? JSON.parse(localStorage.getItem('userInfo'))
+  ? JSON.parse(localStorage.getItem('userInfo') as string)
   : null;
 
 const shippingAddressFromStorage = localStorage.getItem('shippingAddress')
-  ? JSON.parse(localStorage.getItem('shippingAddress'))
-  : {};
-const paymentMethodFromStorage = localStorage.getItem('paymentMethod')
-  ? JSON.parse(localStorage.getItem('paymentMethod'))
-  : {};
+  ? JSON.parse(localStorage.getItem('shippingAddress') as string)
+  : shippingInitialState;
+
+const paymentMethodFromStorage = (localStorage.getItem(
+  'paymentMethod'
+) as string)
+  ? JSON.parse(localStorage.getItem('paymentMethod') as string)
+  : '';
 
 const initialState = {
   cart: {
+    paymentMethod: paymentMethodFromStorage,
     cartItems: cartItemsFromStorage,
     shippingAddress: shippingAddressFromStorage,
-    paymentMethod: paymentMethodFromStorage,
   },
   userLogin: { userInfo: userInfoFromStorage },
 };
@@ -84,5 +87,7 @@ const store = createStore(
   initialState,
   composeWithDevTools(applyMiddleware(...middleware))
 );
+
+export type RootStore = ReturnType<typeof reducer>;
 
 export default store;
