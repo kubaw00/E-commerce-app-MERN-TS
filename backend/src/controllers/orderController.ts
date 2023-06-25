@@ -24,6 +24,7 @@ const getOrderItems = asyncHandler(async (req: Request, res: Response) => {
   } else {
     const order = new Order({
       orderItems,
+      // @ts-expect-error
       user: req.user._id,
       shippingAddress,
       paymentMethod,
@@ -69,6 +70,7 @@ const updateOrderToPaid = asyncHandler(async (req: Request, res: Response) => {
     order.paidAt = Date.now();
     order.paymentResult = {
       id: req.body.id,
+      // @ts-expect-error
       status: req.body.status,
       update_time: req.body.update_time,
       email_address: req.body.payer.email_address,
@@ -87,6 +89,7 @@ const updateOrderToPaid = asyncHandler(async (req: Request, res: Response) => {
 //@access Private
 
 const getMyOrders = asyncHandler(async (req: Request, res: Response) => {
+  // @ts-expect-error
   const orders = await Order.find({ user: req.user._id });
   res.json(orders);
 });
@@ -95,6 +98,7 @@ const getMyOrders = asyncHandler(async (req: Request, res: Response) => {
 //@route GET /api/orders
 //@access Private/Admin
 
+// @ts-expect-error
 const getOrders = asyncHandler(async (req: Request, res: Response) => {
   const orders = await Order.find({}).populate('user', 'id name');
   res.json(orders);

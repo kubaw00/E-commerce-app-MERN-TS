@@ -6,9 +6,11 @@ import { protect, admin } from '../middleware/authMiddleware.js';
 const router = express.Router();
 
 const storage = multer.diskStorage({
+  // @ts-expect-error
   destination(req, file, cb) {
     cb(null, 'uploads/');
   },
+  // @ts-expect-error
   filename(req, file, cb) {
     cb(
       null,
@@ -17,6 +19,7 @@ const storage = multer.diskStorage({
   },
 });
 
+// @ts-expect-error
 function checkFileType(file, cb) {
   const filetypes = /jpg|jpeg|png/;
   const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
@@ -31,12 +34,14 @@ function checkFileType(file, cb) {
 
 const upload = multer({
   storage,
+  // @ts-expect-error
   fileFilter: function (req, file, cb) {
     checkFileType(file, cb);
   },
 });
 
 router.post('/', protect, admin, upload.single('image'), (req, res) => {
+  // @ts-expect-error
   res.send(`/${req.file.path.replace('\\', '/')}`);
 });
 

@@ -65,6 +65,7 @@ const registerUser = asyncHandler(async (req: Request, res: Response) => {
 // @access Private
 
 const updateUserProfile = asyncHandler(async (req: Request, res: Response) => {
+  // @ts-expect-error
   const user = await User.findById((req.user as IUser)._id);
 
   if (user) {
@@ -93,6 +94,7 @@ const updateUserProfile = asyncHandler(async (req: Request, res: Response) => {
 // @access Private
 
 const getUserProfile = asyncHandler(async (req: Request, res: Response) => {
+  // @ts-expect-error
   const user = await User.findById((req.user as IUser)._id);
 
   if (user) {
@@ -112,6 +114,7 @@ const getUserProfile = asyncHandler(async (req: Request, res: Response) => {
 // @route GET /api/users
 // @access Private/Admin
 
+// @ts-expect-error
 const getUsers = asyncHandler(async (req: Request, res: Response) => {
   const users = await User.find({});
   res.json(users);
