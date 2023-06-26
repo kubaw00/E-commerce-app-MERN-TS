@@ -2,20 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Form, Button, Row, Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import Message from '../components/Message';
-import Loader from '../components/Loader';
+import { Message } from '../components/Message';
+import { Loader } from '../components/Loader';
 import { login } from '../actions/userActions';
-import FormContainer from '../components/FormContainer';
+import { FormContainer } from '../components/FormContainer';
 import { useLocation, useNavigate } from 'react-router';
+import { RootStore } from '../store';
 
-const LoginScreen = () => {
+export const LoginScreen: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const dispatch = useDispatch();
 
-  const userLogin = useSelector((state) => state.userLogin);
-  const { loading, error, userInfo } = userLogin;
+  const { loading, error, userInfo } = useSelector(
+    (state: RootStore) => state.userLogin
+  );
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -28,7 +30,7 @@ const LoginScreen = () => {
     }
   });
 
-  const submitHandler = (e) => {
+  const submitHandler = (e: React.FormEvent<HTMLElement>) => {
     e.preventDefault();
     dispatch(login(email, password));
   };
@@ -77,5 +79,3 @@ const LoginScreen = () => {
     </FormContainer>
   );
 };
-
-export default LoginScreen;

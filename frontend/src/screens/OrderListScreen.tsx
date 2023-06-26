@@ -1,25 +1,25 @@
 import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { RootStore } from '../store';
 import { Button, Table } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import Message from '../components/Message';
-import Loader from '../components/Loader';
-import { listAdminOrders } from '../actions/orderActions';
+import { Message } from '../components/Message';
+import { Loader } from '../components/Loader';
+import { listOrders } from '../actions/orderActions';
 import { useNavigate } from 'react-router';
+import { LinkContainer } from 'react-router-bootstrap';
 
-const OrderListScreen = () => {
+export const OrderListScreen = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const orderListAdmin = useSelector((state) => state.orderListAdmin);
-  const { loading, error, orders } = orderListAdmin;
-
-  const userLogin = useSelector((state) => state.userLogin);
-  const { userInfo } = userLogin;
+  const { loading, error, orders } = useSelector(
+    (state: RootStore) => state.orderList
+  );
+  const { userInfo } = useSelector((state: RootStore) => state.userLogin);
 
   useEffect(() => {
     if (userInfo && userInfo.isAdmin) {
-      dispatch(listAdminOrders());
+      dispatch(listOrders());
     } else {
       navigate('/login');
     }
@@ -46,36 +46,33 @@ const OrderListScreen = () => {
             </tr>
           </thead>
           <tbody>
-            {orders.map((order) => (
-              <tr key={order._id}>
+            {orders?.map((order, index) => (
+              <tr key={`${order._id}-${index}`}>
                 <td>{order._id}</td>
                 <td>{order.user && order.user.name}</td>
-                <td>{order.createdAt.substring(0, 10)}</td>
+                <td>{order.createdAt?.substring(0, 10)}</td>
                 <td>${order.totalPrice}</td>
                 <td>
                   {order.isPaid ? (
-                    order.paidAt.substring(0, 10)
+                    order.paidAt?.substring(0, 10)
                   ) : (
                     <i className='fas fa-times' style={{ color: 'red' }}></i>
                   )}
                 </td>
                 <td>
                   {order.isDelivered ? (
-                    order.deliveredAt.substring(0, 10)
+                    order.deliveredAt?.substring(0, 10)
                   ) : (
                     <i className='fas fa-times' style={{ color: 'red' }}></i>
                   )}
                 </td>
 
                 <td>
-                  <Button
-                    as={Link}
-                    to={`/order/${order._id}`}
-                    variant='light'
-                    className='btn-sm'
-                  >
-                    Details
-                  </Button>
+                  <LinkContainer to={`/order/${order._id}`}>
+                    <Button variant='light' className='btn-sm'>
+                      Detail
+                    </Button>
+                  </LinkContainer>
                 </td>
               </tr>
             ))}
@@ -85,5 +82,3 @@ const OrderListScreen = () => {
     </>
   );
 };
-
-export default OrderListScreen;
