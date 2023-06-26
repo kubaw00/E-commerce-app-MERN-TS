@@ -1,41 +1,33 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Row, Col, ListGroup, Image, Card } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import Message from '../components/Message';
+import { Message } from '../components/Message';
 import { useNavigate } from 'react-router';
-import CheckoutSteps from '../components/CheckoutSteps';
+import { CheckoutSteps } from '../components/CheckoutSteps';
 import { Link } from 'react-router-dom';
 import { createOrder } from '../actions/orderActions';
+import { RootStore } from '../store';
 
-const PlaceOrderScreen = () => {
-  const cart = useSelector((state) => state.cart);
+const PlaceOrderScreen: React.FC = () => {
+  const cart = useSelector((state: RootStore) => state.cart);
+  const { order, success, error } = useSelector(
+    (state: RootStore) => state.orderCreate
+  );
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const addDecimals = (num) => {
-    return (Math.round(num * 100) / 100).toFixed(2);
-  };
-
   //CALCULATE PRICES
 
-  cart.itemsPrice = addDecimals(
-    cart.cartItems
-      .reduce((acc, item) => acc + item.price * item.qty, 0)
-      .toFixed(2)
+  const [itemsPrice] = useState(
+    cart.cartItems.reduce((acc, item) => acc + item.qty * item.price, 0)
   );
-
-  cart.shippingPrice = Number(cart.itemsPrice > 100 ? 0 : 10);
-  cart.taxPrice = addDecimals(Number((0.15 * cart.itemsPrice).toFixed(2)));
-  cart.totalPrice = addDecimals(
-    Number(cart.shippingPrice) + Number(cart.taxPrice) + Number(cart.itemsPrice)
-  );
-
-  const orderCreate = useSelector((state) => state.orderCreate);
-  const { order, success, error } = orderCreate;
+  const [shippingPrice] = useState(itemsPrice > 100 ? 0 : 100);
+  const [taxPrice] = useState(Number((0.15 * itemsPrice).toFixed(2)));
+  const [totalPrice] = useState(itemsPrice + shippingPrice + taxPrice);
 
   useEffect(() => {
     if (success) {
-      navigate(`/order/${order._id}`);
+      navigate(`/order/${order?._id}`);
     }
     // eslint-disable-next-line
   }, [navigate, success]);
@@ -46,10 +38,10 @@ const PlaceOrderScreen = () => {
         orderItems: cart.cartItems,
         shippingAddress: cart.shippingAddress,
         paymentMethod: cart.paymentMethod,
-        itemsPrice: cart.itemsPrice,
-        shippingPrice: cart.shippingPrice,
-        taxPrice: cart.taxPrice,
-        totalPrice: cart.totalPrice,
+        itemsPrice,
+        taxPrice,
+        shippingPrice,
+        totalPrice,
       })
     );
   };
@@ -118,25 +110,25 @@ const PlaceOrderScreen = () => {
               <ListGroup.Item>
                 <Row>
                   <Col>Items</Col>
-                  <Col>${cart.itemsPrice}</Col>
+                  <Col>${itemsPrice}</Col>
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>
                 <Row>
                   <Col>Shipping</Col>
-                  <Col>${cart.shippingPrice}</Col>
+                  <Col>${shippingPrice}</Col>
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>
                 <Row>
                   <Col>Tax</Col>
-                  <Col>${cart.taxPrice}</Col>
+                  <Col>${taxPrice}</Col>
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>
                 <Row>
                   <Col>Total</Col>
-                  <Col>${cart.totalPrice}</Col>
+                  <Col>${totalPrice}</Col>
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>
@@ -145,7 +137,7 @@ const PlaceOrderScreen = () => {
               <ListGroup.Item className='d-grid gap-2'>
                 <Button
                   type='button'
-                  disabled={cart.cartItems === 0}
+                  disabled={cart.cartItems.length === 0}
                   onClick={placeOrderHandler}
                 >
                   Place Order
