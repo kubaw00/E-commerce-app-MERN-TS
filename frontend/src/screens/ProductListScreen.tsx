@@ -16,7 +16,7 @@ import { PRODUCT_ACTIONS } from '../types';
 
 import { RootStore } from '../store';
 
-const ProductListScreen: React.FC = () => {
+export const ProductListScreen: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -144,5 +144,3 @@ const ProductListScreen: React.FC = () => {
     </>
   );
 };
-
-export default ProductListScreen;

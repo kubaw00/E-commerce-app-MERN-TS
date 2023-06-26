@@ -24,7 +24,7 @@ import { useNavigate } from 'react-router';
 import { addToCart } from '../actions/cartActions';
 import { PRODUCT_ACTIONS } from '../types';
 
-const ProductScreen = () => {
+export const ProductScreen = () => {
   const [qty, setQty] = useState(1);
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
@@ -230,5 +230,3 @@ const ProductScreen = () => {
     </>
   );
 };
-
-export default ProductScreen;

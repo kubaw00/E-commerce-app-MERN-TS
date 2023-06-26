@@ -10,7 +10,7 @@ import { useLocation, useNavigate } from 'react-router';
 import { RootStore } from '../store';
 import { initUserState, localUserReducer } from './common/helper';
 
-const RegisterScreen: React.FC = () => {
+export const RegisterScreen: React.FC = () => {
   const [state, localDispatch] = useReducer(localUserReducer, initUserState);
 
   const dispatch = useDispatch();
@@ -110,5 +110,3 @@ const RegisterScreen: React.FC = () => {
     </FormContainer>
   );
 };
-
-export default RegisterScreen;

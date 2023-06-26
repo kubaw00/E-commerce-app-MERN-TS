@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 import { createOrder } from '../actions/orderActions';
 import { RootStore } from '../store';
 
-const PlaceOrderScreen: React.FC = () => {
+export const PlaceOrderScreen: React.FC = () => {
   const cart = useSelector((state: RootStore) => state.cart);
   const { order, success, error } = useSelector(
     (state: RootStore) => state.orderCreate
@@ -150,5 +150,3 @@ const PlaceOrderScreen: React.FC = () => {
     </>
   );
 };
-
-export default PlaceOrderScreen;

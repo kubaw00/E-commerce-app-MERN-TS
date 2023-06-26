@@ -1,24 +1,27 @@
 import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+
 import { Button, Table } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import Message from '../components/Message';
-import Loader from '../components/Loader';
+import { Message } from '../components/Message';
+import { Loader } from '../components/Loader';
 import { listUsers, deleteUser } from '../actions/userActions';
 import { useNavigate } from 'react-router';
+import { LinkContainer } from 'react-router-bootstrap';
+import { RootStore } from '../store';
 
-const UserListScreen = () => {
+export const UserListScreen: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const userList = useSelector((state) => state.userList);
-  const { loading, error, users } = userList;
+  const { loading, error, users } = useSelector(
+    (state: RootStore) => state.userList
+  );
 
-  const userLogin = useSelector((state) => state.userLogin);
-  const { userInfo } = userLogin;
+  const { userInfo } = useSelector((state: RootStore) => state.userLogin);
 
-  const userDelete = useSelector((state) => state.userDelete);
-  const { success: successDelete } = userDelete;
+  const { success: successDelete } = useSelector(
+    (state: RootStore) => state.userDelete
+  );
 
   useEffect(() => {
     if (userInfo && userInfo.isAdmin) {
@@ -28,7 +31,7 @@ const UserListScreen = () => {
     }
   }, [dispatch, navigate, userInfo, successDelete]);
 
-  const deleteHandler = (id) => {
+  const deleteHandler = (id: string) => {
     if (window.confirm('Are you sure?')) {
       dispatch(deleteUser(id));
     }
@@ -53,7 +56,7 @@ const UserListScreen = () => {
             </tr>
           </thead>
           <tbody>
-            {users.map((user) => (
+            {users?.map((user) => (
               <tr key={user._id}>
                 <td>{user._id}</td>
                 <td>{user.name}</td>
@@ -69,18 +72,15 @@ const UserListScreen = () => {
                   )}
                 </td>
                 <td>
-                  <Button
-                    as={Link}
-                    to={`/admin/user/${user._id}/edit`}
-                    variant='light'
-                    className='btn-sm'
-                  >
-                    <i className='fas fa-edit'></i>
-                  </Button>
+                  <LinkContainer to={`/admin/user/${user._id}/edit`}>
+                    <Button variant='light' className='btn-sm'>
+                      <i className='fas fa-edit'></i>
+                    </Button>
+                  </LinkContainer>
                   <Button
                     variant='danger'
                     className='btn-sm'
-                    disabled={userInfo._id === user._id}
+                    disabled={userInfo?._id === user._id}
                     onClick={() => deleteHandler(user._id)}
                   >
                     <i className='fas fa-trash'></i>
@@ -94,5 +94,3 @@ const UserListScreen = () => {
     </>
   );
 };
-
-export default UserListScreen;

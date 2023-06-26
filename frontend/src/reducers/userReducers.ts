@@ -169,7 +169,7 @@ export const userDeleteReducer = (
 };
 
 export interface UserUpdatePayload {
-  _id: string;
+  _id: string | undefined;
   name: string;
   email: string;
   isAdmin: boolean;

@@ -1,27 +1,22 @@
 import React, { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import FormContainer from '../components/FormContainer';
+import { FormContainer } from '../components/FormContainer';
 import { useNavigate } from 'react-router';
 import { saveShippingAddress } from '../actions/cartActions';
-import CheckoutSteps from '../components/CheckoutSteps';
+import { CheckoutSteps } from '../components/CheckoutSteps';
+import { RootStore } from '../store';
 
-const ShippingScreen = () => {
-  const cart = useSelector((state) => state.cart);
-  const { shippingAddress } = cart;
-
+export const ShippingScreen: React.FC = () => {
+  const { shippingAddress } = useSelector((state: RootStore) => state.cart);
+  const [state, setState] = useState(shippingAddress);
   const navigate = useNavigate();
-
-  const [address, setAddress] = useState(shippingAddress.address);
-  const [city, setCity] = useState(shippingAddress.city);
-  const [postalCode, setPostalCode] = useState(shippingAddress.postalCode);
-  const [country, setCountry] = useState(shippingAddress.country);
 
   const dispatch = useDispatch();
 
-  const submitHandler = (e) => {
+  const submitHandler = (e: React.FormEvent<HTMLElement>) => {
     e.preventDefault();
-    dispatch(saveShippingAddress({ address, city, postalCode, country }));
+    dispatch(saveShippingAddress(state));
     navigate('/payment');
   };
 
@@ -35,9 +30,9 @@ const ShippingScreen = () => {
           <Form.Control
             type='text'
             placeholder='Enter address'
-            value={address}
+            value={state.address}
             required
-            onChange={(e) => setAddress(e.target.value)}
+            onChange={(e) => setState({ ...state, address: e.target.value })}
           ></Form.Control>
         </Form.Group>
 
@@ -46,9 +41,9 @@ const ShippingScreen = () => {
           <Form.Control
             type='text'
             placeholder='Enter city'
-            value={city}
+            value={state.city}
             required
-            onChange={(e) => setCity(e.target.value)}
+            onChange={(e) => setState({ ...state, postalCode: e.target.value })}
           ></Form.Control>
         </Form.Group>
 
@@ -57,9 +52,9 @@ const ShippingScreen = () => {
           <Form.Control
             type='text'
             placeholder='Enter postal code'
-            value={postalCode}
+            value={state.postalCode}
             required
-            onChange={(e) => setPostalCode(e.target.value)}
+            onChange={(e) => setState({ ...state, city: e.target.value })}
           ></Form.Control>
         </Form.Group>
 
@@ -68,18 +63,16 @@ const ShippingScreen = () => {
           <Form.Control
             type='text'
             placeholder='Enter country'
-            value={country}
+            value={state.country}
             required
-            onChange={(e) => setCountry(e.target.value)}
+            onChange={(e) => setState({ ...state, country: e.target.value })}
           ></Form.Control>
         </Form.Group>
 
-        <Button type='submit' variant='primary'>
+        <Button type='submit' variant='primary' className='mt-4'>
           Continue
         </Button>
       </Form>
     </FormContainer>
   );
 };
-
-export default ShippingScreen;

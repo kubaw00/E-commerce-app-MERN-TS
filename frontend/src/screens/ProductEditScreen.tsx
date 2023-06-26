@@ -12,7 +12,7 @@ import { PRODUCT_ACTIONS } from '../types';
 import { RootStore } from '../store';
 import { initProductState, localProductReducer } from './common/helper';
 
-const ProductEditScreen: React.FC = () => {
+export const ProductEditScreen: React.FC = () => {
   const [state, localDispatch] = useReducer(
     localProductReducer,
     initProductState
@@ -213,5 +213,3 @@ const ProductEditScreen: React.FC = () => {
     </>
   );
 };
-
-export default ProductEditScreen;
