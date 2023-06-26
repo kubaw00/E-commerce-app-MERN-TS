@@ -1,13 +1,18 @@
+import React from 'react';
 import { Helmet } from 'react-helmet';
 
-import React from 'react';
+interface MetaProps {
+  title?: string;
+  description?: string;
+  keywords?: string;
+}
 
-const Meta = ({ title, description, keywords }) => {
+export const Meta: React.FC<MetaProps> = ({ title, description, keywords }) => {
   return (
     <Helmet>
       <title>{title}</title>
       <meta name='description' content={description} />
-      <meta name='keyword' content={keywords} />
+      <meta name='keywords' content={keywords} />
     </Helmet>
   );
 };
@@ -17,5 +22,3 @@ Meta.defaultProps = {
   keywords: 'electronics, buy electronics, cheap electronincs',
   description: 'We sell the best products for cheap',
 };
-
-export default Meta;

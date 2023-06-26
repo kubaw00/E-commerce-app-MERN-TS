@@ -3,11 +3,11 @@ import { Form, Button } from 'react-bootstrap';
 import { Col, Row } from 'react-bootstrap';
 import { useNavigate } from 'react-router';
 
-const SearchBox = () => {
+export const SearchBox = () => {
   const [keyword, setKeyword] = useState('');
   const navigate = useNavigate();
 
-  const submitHandler = (e) => {
+  const submitHandler = (e: React.FormEvent<HTMLElement>) => {
     e.preventDefault();
     if (keyword.trim()) {
       navigate(`/search/${keyword}`);
@@ -23,7 +23,9 @@ const SearchBox = () => {
           <Form.Control
             type='text'
             name='q'
-            onChange={(e) => setKeyword(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setKeyword(e.target.value)
+            }
             placeholder='Search products...'
             className='me-sm-1 ms-sm-3'
           ></Form.Control>
@@ -37,5 +39,3 @@ const SearchBox = () => {
     </Form>
   );
 };
-
-export default SearchBox;
