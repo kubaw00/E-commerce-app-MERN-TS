@@ -1,41 +1,41 @@
 import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+
 import { Button, Table, Row, Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import Message from '../components/Message';
-import Loader from '../components/Loader';
-import Paginate from '../components/Paginate';
+import { Message } from '../components/Message';
+import { Loader } from '../components/Loader';
+import { Paginate } from '../components/Paginate';
 import {
   listProducts,
   deleteProduct,
   createProduct,
 } from '../actions/productActions';
 import { useNavigate, useParams } from 'react-router';
-import {
-  PRODUCT_CREATE_RESET,
-  PRODUCT_DETAILS_RESET,
-} from '../constants/productConstants';
+import { LinkContainer } from 'react-router-bootstrap';
+import { PRODUCT_ACTIONS } from '../types';
 
-const ProductListScreen = () => {
+import { RootStore } from '../store';
+
+const ProductListScreen: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const pageNumber = useParams().pageNumber || 1;
+  const { pageNumber } = useParams<{ pageNumber: string }>();
 
-  const productList = useSelector((state) => state.productList);
-  const { loading, error, products, pages, page } = productList;
+  const productList = useSelector((state: RootStore) => state.productList);
+  const { loading, error, products } = productList;
 
-  const userLogin = useSelector((state) => state.userLogin);
+  const userLogin = useSelector((state: RootStore) => state.userLogin);
   const { userInfo } = userLogin;
 
-  const productDelete = useSelector((state) => state.productDelete);
+  const productDelete = useSelector((state: RootStore) => state.productDelete);
   const {
     loading: loadingDelete,
     error: errorDelete,
     success: successDelete,
   } = productDelete;
 
-  const productCreate = useSelector((state) => state.productCreate);
+  const productCreate = useSelector((state: RootStore) => state.productCreate);
   const {
     loading: loadingCreate,
     error: errorCreate,
@@ -44,15 +44,15 @@ const ProductListScreen = () => {
   } = productCreate;
 
   useEffect(() => {
-    dispatch({ type: PRODUCT_CREATE_RESET });
-    dispatch({ type: PRODUCT_DETAILS_RESET });
-    if (!userInfo.isAdmin) {
+    dispatch({ type: PRODUCT_ACTIONS.PRODUCT_CREATE_RESET });
+
+    if (!userInfo?.isAdmin) {
       navigate('/login');
     }
     if (successCreate) {
-      navigate(`/admin/product/${createdProduct._id}/edit`);
+      navigate(`/admin/product/${createdProduct?._id}/edit`);
     } else {
-      dispatch(listProducts('', pageNumber));
+      dispatch(listProducts('', pageNumber ? pageNumber : '1'));
     }
   }, [
     dispatch,
@@ -64,7 +64,7 @@ const ProductListScreen = () => {
     pageNumber,
   ]);
 
-  const deleteHandler = (id) => {
+  const deleteHandler = (id: string) => {
     if (window.confirm('Are you sure?')) {
       dispatch(deleteProduct(id));
     }
@@ -108,7 +108,7 @@ const ProductListScreen = () => {
               </tr>
             </thead>
             <tbody>
-              {products.map((product) => (
+              {products?.products?.map((product) => (
                 <tr key={product._id}>
                   <td>{product._id}</td>
                   <td>{product.name}</td>
@@ -116,14 +116,11 @@ const ProductListScreen = () => {
                   <td>{product.category}</td>
                   <td>{product.brand}</td>
                   <td>
-                    <Button
-                      as={Link}
-                      to={`/admin/product/${product._id}/edit`}
-                      variant='light'
-                      className='btn-sm'
-                    >
-                      <i className='fas fa-edit'></i>
-                    </Button>
+                    <LinkContainer to={`/admin/product/${product._id}/edit`}>
+                      <Button variant='light' className='btn-sm'>
+                        <i className='fas fa-edit'></i>
+                      </Button>
+                    </LinkContainer>
                     <Button
                       variant='danger'
                       className='btn-sm'
@@ -136,7 +133,12 @@ const ProductListScreen = () => {
               ))}
             </tbody>
           </Table>
-          <Paginate pages={pages} page={page} isAdmin={true} />
+          <Paginate
+            pages={products?.pages || 1}
+            page={products?.page || 1}
+            isAdmin={userInfo?.isAdmin || true}
+            keyword=''
+          />
         </>
       )}
     </>
