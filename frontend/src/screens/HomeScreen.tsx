@@ -1,25 +1,29 @@
 import React, { useEffect } from 'react';
-import Meta from '../components/Meta';
+import { Meta } from '../components/Meta';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col } from 'react-bootstrap';
-import Product from '../components/Product';
-import Message from '../components/Message';
-import Loader from '../components/Loader';
-import Paginate from '../components/Paginate';
+import { Product } from '../components/Product';
+import { Message } from '../components/Message';
+import { Loader } from '../components/Loader';
+import { Paginate } from '../components/Paginate';
 import { listProducts } from '../actions/productActions';
 import { useParams } from 'react-router';
-import ProductCarousel from '../components/ProductCarousel';
+import { ProductCarousel } from '../components/ProductCarousel';
 import { Link } from 'react-router-dom';
+import { RootStore } from '../store';
 
-const HomeScreen = () => {
+export const HomeScreen: React.FC = () => {
   const dispatch = useDispatch();
-  const productList = useSelector((state) => state.productList);
-  const { loading, error, products, page, pages } = productList;
 
-  let { keyword, pageNumber = 1 } = useParams();
+  const { keyword } = useParams<{ keyword: string }>();
+  const { pageNumber } = useParams<{ pageNumber: string }>();
+
+  const { error, loading, products } = useSelector(
+    (state: RootStore) => state.productList
+  );
 
   useEffect(() => {
-    dispatch(listProducts(keyword, pageNumber));
+    dispatch(listProducts(keyword, pageNumber || '1'));
   }, [dispatch, keyword, pageNumber]);
 
   return (
@@ -40,7 +44,7 @@ const HomeScreen = () => {
       ) : (
         <>
           <Row>
-            {products.map((product) => (
+            {products?.products?.map((product) => (
               <Col
                 className='align-items-stretch justify-content-around d-flex'
                 key={product._id}
@@ -54,14 +58,13 @@ const HomeScreen = () => {
             ))}
           </Row>
           <Paginate
-            pages={pages}
-            page={page}
+            pages={products?.pages || 1}
+            page={products?.page || 1}
             keyword={keyword ? keyword : ''}
+            isAdmin={false}
           />
         </>
       )}
     </>
   );
 };
-
-export default HomeScreen;

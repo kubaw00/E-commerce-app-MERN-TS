@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Message from '../components/Message';
+import { Message } from '../components/Message';
 import { Link } from 'react-router-dom';
 import {
   Row,
@@ -13,16 +13,17 @@ import {
 } from 'react-bootstrap';
 import { addToCart, removeFromCart } from '../actions/cartActions';
 import { useNavigate } from 'react-router';
+import { RootStore } from '../store';
 
-const CartScreen = () => {
+export const CartScreen: React.FC = () => {
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
-  const cartItems = useSelector((state) => state.cart.cartItems);
-  const userLogin = useSelector((state) => state.userLogin);
+  const cartItems = useSelector((state: RootStore) => state.cart.cartItems);
+  const userLogin = useSelector((state: RootStore) => state.userLogin);
   const { userInfo } = userLogin;
 
-  const removeFromCartHandler = (id) => {
+  const removeFromCartHandler = (id: string) => {
     dispatch(removeFromCart(id));
   };
 
@@ -48,7 +49,7 @@ const CartScreen = () => {
               <ListGroup.Item key={item.product}>
                 <Row>
                   <Col md={2}>
-                    <Image src={item.image} alt={item.name} fluid rpunded />
+                    <Image src={item.image} alt={item.name} fluid rounded />
                   </Col>
                   <Col md={3}>
                     <Link to={`/product/${item.product}`}>{item.name}</Link>
@@ -118,5 +119,3 @@ const CartScreen = () => {
     </Row>
   );
 };
-
-export default CartScreen;
