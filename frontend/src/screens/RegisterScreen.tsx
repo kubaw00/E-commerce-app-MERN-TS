@@ -1,24 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import { Link } from 'react-router-dom';
 import { Form, Button, Row, Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import Message from '../components/Message';
-import Loader from '../components/Loader';
+import { Message } from '../components/Message';
+import { Loader } from '../components/Loader';
 import { register } from '../actions/userActions';
-import FormContainer from '../components/FormContainer';
+import { FormContainer } from '../components/FormContainer';
 import { useLocation, useNavigate } from 'react-router';
+import { RootStore } from '../store';
+import { initUserState, localUserReducer } from './common/helper';
 
-const RegisterScreen = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [name, setName] = useState('');
-  const [message, setMessage] = useState(null);
+const RegisterScreen: React.FC = () => {
+  const [state, localDispatch] = useReducer(localUserReducer, initUserState);
 
   const dispatch = useDispatch();
 
-  const userRegister = useSelector((state) => state.userRegister);
-  const { loading, error, userInfo } = userRegister;
+  const { loading, error, userInfo } = useSelector(
+    (state: RootStore) => state.userRegister
+  );
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -31,29 +30,32 @@ const RegisterScreen = () => {
     }
   }, [navigate, redirect, userInfo]);
 
-  const submitHandler = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLElement>) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
-      setMessage('Password do not match');
+    if (state.password !== state.confirmPassword || state.password === '') {
+      localDispatch({ id: 'message', value: 'Password do not match' });
     } else {
-      dispatch(register(name, email, password));
+      dispatch(register(state.name, state.email, state.password));
+      localDispatch({ id: 'message', value: '' });
     }
   };
 
   return (
     <FormContainer>
       <h1>Sign Up</h1>
-      {message && <Message variant='danger'>{message}</Message>}
+      {state.message && <Message variant='danger'>{state.message}</Message>}
       {error && <Message variant='danger'>{error}</Message>}
       {loading && <Loader />}
-      <Form onSubmit={submitHandler}>
+      <Form onSubmit={handleSubmit}>
         <Form.Group controlId='name'>
           <Form.Label>Name</Form.Label>
           <Form.Control
             type='name'
             placeholder='Enter Name'
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={state.name}
+            onChange={(e) =>
+              localDispatch({ id: 'name', value: e.target.value })
+            }
           ></Form.Control>
         </Form.Group>
         <Form.Group controlId='email'>
@@ -61,8 +63,10 @@ const RegisterScreen = () => {
           <Form.Control
             type='email'
             placeholder='Email'
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={state.email}
+            onChange={(e) =>
+              localDispatch({ id: 'email', value: e.target.value })
+            }
           ></Form.Control>
         </Form.Group>
         <Form.Group controlId='password'>
@@ -70,8 +74,10 @@ const RegisterScreen = () => {
           <Form.Control
             type='password'
             placeholder='Enter password'
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={state.password}
+            onChange={(e) =>
+              localDispatch({ id: 'password', value: e.target.value })
+            }
           ></Form.Control>
         </Form.Group>
         <Form.Group controlId='confirmPassword'>
@@ -79,8 +85,10 @@ const RegisterScreen = () => {
           <Form.Control
             type='password'
             placeholder='Confirm password'
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            value={state.confirmPassword}
+            onChange={(e) =>
+              localDispatch({ id: 'confirmPassword', value: e.target.value })
+            }
           ></Form.Control>
         </Form.Group>
 
