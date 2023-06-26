@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { Form, Button, Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import FormContainer from '../components/FormContainer';
+import { FormContainer } from '../components/FormContainer';
 import { useNavigate } from 'react-router';
 import { savePaymentMethod } from '../actions/cartActions';
-import CheckoutSteps from '../components/CheckoutSteps';
+import { CheckoutSteps } from '../components/CheckoutSteps';
+import { RootStore } from '../store';
 
-const PaymentScreen = () => {
+export const PaymentScreen: React.FC = () => {
   const navigate = useNavigate();
-  const cart = useSelector((state) => state.cart);
-  const { shippingAddress } = cart;
+  const { shippingAddress } = useSelector((state: RootStore) => state.cart);
 
   if (!shippingAddress) {
     navigate('/shipping');
@@ -19,7 +19,7 @@ const PaymentScreen = () => {
 
   const dispatch = useDispatch();
 
-  const submitHandler = (e) => {
+  const submitHandler = (e: React.FormEvent<HTMLElement>) => {
     e.preventDefault();
     dispatch(savePaymentMethod(paymentMethod));
     navigate('/placeorder');
@@ -40,7 +40,9 @@ const PaymentScreen = () => {
               id='PayPal'
               name='paymentMethod'
               value='PayPal'
-              onChange={(e) => setPaymentMethod(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setPaymentMethod(e.target.value)
+              }
               checked={paymentMethod === 'PayPal'}
             ></Form.Check>
             {/* <Form.Check
@@ -62,5 +64,3 @@ const PaymentScreen = () => {
     </FormContainer>
   );
 };
-
-export default PaymentScreen;
