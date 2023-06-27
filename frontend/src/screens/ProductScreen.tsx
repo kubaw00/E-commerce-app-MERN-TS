@@ -130,10 +130,12 @@ export const ProductScreen = () => {
                       <Row>
                         <Col>Qty</Col>
                         <Col>
-                          <Form.Select
+                          <Form.Control
                             as='select'
                             value={qty}
-                            onChange={(e) => setQty(+e.target.value)}
+                            onChange={(
+                              e: React.ChangeEvent<HTMLInputElement>
+                            ) => setQty(+e.target.value)}
                           >
                             {[...Array(product?.countInStock).keys()].map(
                               (x) => (
@@ -142,7 +144,7 @@ export const ProductScreen = () => {
                                 </option>
                               )
                             )}
-                          </Form.Select>
+                          </Form.Control>
                         </Col>
                       </Row>
                     </ListGroup.Item>

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import React, { useState, useEffect, useReducer } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router';
@@ -26,7 +26,7 @@ export const UserEditScreen: React.FC = () => {
   const {
     loading: loadingUpdate,
     error: errorUpdate,
-    user: userUpdate,
+
     success: successUpdate,
   } = useSelector((state: RootStore) => state.userUpdate);
 

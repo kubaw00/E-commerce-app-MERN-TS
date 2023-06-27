@@ -56,25 +56,19 @@ export const CartScreen: React.FC = () => {
                   </Col>
                   <Col md={2}>{item.price}</Col>
                   <Col md={3}>
-                    <Form.Select
+                    <Form.Control
                       as='select'
                       value={item.qty}
-                      onChange={(e) => {
-                        dispatch(
-                          addToCart(item.product, Number(e.target.value))
-                        );
-                        navigate('/cart');
-                      }}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        dispatch(addToCart(item.product, +e.target.value))
+                      }
                     >
-                      <option key={1} value={1}>
-                        1
-                      </option>
                       {[...Array(item.countInStock).keys()].map((x) => (
-                        <option key={x + 2} value={x + 2}>
-                          {x + 2}
+                        <option key={x + 1} value={x + 1}>
+                          {x + 1}
                         </option>
                       ))}
-                    </Form.Select>
+                    </Form.Control>
                   </Col>
                   <Col md={2}>
                     <Button
